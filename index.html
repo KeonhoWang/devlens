@@ -1,0 +1,393 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DevLens AI — Code Health Analyzer</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  </head>
+  <body>
+    <!-- Landing -->
+    <div id="landing">
+      <nav class="landing-nav">
+        <div class="logo">
+          <span class="logo-icon">🔬</span>
+          <span class="logo-text">Dev<span>Lens</span></span>
+        </div>
+        <div class="landing-nav-right">
+          <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
+          <button class="landing-cta" onclick="goToApp()">Launch App →</button>
+        </div>
+      </nav>
+
+      <div class="landing-hero">
+        <div class="landing-badge">✨ AI-Powered · Free · No signup needed</div>
+        <h1 class="landing-title">
+          X-Ray Your Code<br /><span>Instantly</span>
+        </h1>
+        <p class="landing-desc">
+          DevLens analyzes Python, JavaScript, Java, C/C++, PHP, and Swift —
+          finding bugs, security issues, complexity problems, and giving you
+          AI-powered fixes.
+        </p>
+        <div class="landing-btns">
+          <button class="btn-hero" onclick="goToApp()">
+            🔬 Start Analyzing Free
+          </button>
+        </div>
+        <div class="landing-stats">
+          <div class="landing-stat">
+            <div class="landing-stat-num">6</div>
+            <div class="landing-stat-label">Languages</div>
+          </div>
+          <div class="landing-stat">
+            <div class="landing-stat-num">5</div>
+            <div class="landing-stat-label">Metrics</div>
+          </div>
+          <div class="landing-stat">
+            <div class="landing-stat-num">A+→F</div>
+            <div class="landing-stat-label">Grades</div>
+          </div>
+          <div class="landing-stat">
+            <div class="landing-stat-num">$0</div>
+            <div class="landing-stat-label">Forever</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">🔐</div>
+          <h3>Security Scanning</h3>
+          <p>
+            Detects dangerous patterns like eval(), hardcoded secrets, injection
+            vulnerabilities, and weak hashing.
+          </p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🧠</div>
+          <h3>Complexity Analysis</h3>
+          <p>
+            Measures cyclomatic complexity and flags functions that are too
+            complex to maintain.
+          </p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">📚</div>
+          <h3>Documentation Score</h3>
+          <p>
+            Checks your docstrings, comments, and module documentation coverage
+            automatically.
+          </p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🤖</div>
+          <h3>AI Explanations</h3>
+          <p>
+            Click any issue for a beginner-friendly AI explanation powered by
+            Groq LLaMA.
+          </p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🏆</div>
+          <h3>Letter Grades</h3>
+          <p>
+            Get an A+ to F grade instantly so you know exactly where your code
+            stands.
+          </p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">📊</div>
+          <h3>Compare Files</h3>
+          <p>
+            Analyze two files side by side and see exactly which one scores
+            better and why.
+          </p>
+        </div>
+      </div>
+
+      <div class="landing-footer">
+        <p>
+          Built with Python · Flask · AI · ❤️ &nbsp;·&nbsp; Press
+          <kbd>Ctrl+L</kbd> for live analysis
+        </p>
+      </div>
+    </div>
+
+    <!-- App -->
+    <div id="app" class="hidden">
+      <header>
+        <div class="header-inner">
+          <div class="logo" onclick="goToLanding()" style="cursor: pointer">
+            <span class="logo-icon">🔬</span>
+            <span class="logo-text">Dev<span>Lens</span></span>
+          </div>
+          <div class="header-tabs">
+            <button
+              class="tab-btn active"
+              onclick="switchTab('analyze')"
+              id="tab-analyze"
+            >
+              🔬 Analyze
+            </button>
+            <button
+              class="tab-btn"
+              onclick="switchTab('compare')"
+              id="tab-compare"
+            >
+              📊 Compare
+            </button>
+          </div>
+          <div class="header-right">
+            <span id="live-indicator" class="live-off">⚡ Live: OFF</span>
+            <button class="history-btn" onclick="toggleHistory()">
+              📈 History
+            </button>
+            <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
+          </div>
+        </div>
+      </header>
+
+      <!-- History Panel -->
+      <div id="history-panel" class="hidden">
+        <div class="history-header">
+          <h3>📈 History</h3>
+          <button onclick="toggleHistory()">✕</button>
+        </div>
+        <div id="history-list">
+          <div class="no-history">No analyses yet!</div>
+        </div>
+      </div>
+
+      <!-- Analyze Tab -->
+      <div id="tab-analyze-content">
+        <section class="editor-section">
+          <div class="editor-card">
+            <div class="editor-toolbar">
+              <div class="toolbar-left">
+                <span class="toolbar-label">Language</span>
+                <select id="language-select">
+                  <option value="python">🐍 Python</option>
+                  <option value="javascript">📜 JavaScript</option>
+                  <option value="java">☕ Java</option>
+                  <option value="cpp">⚙️ C / C++</option>
+                  <option value="php">🐘 PHP</option>
+                  <option value="swift">🍎 Swift</option>
+                  <option value="other">📄 Other</option>
+                </select>
+              </div>
+              <div class="toolbar-right">
+                <label id="upload-label">
+                  📁 Upload
+                  <input
+                    type="file"
+                    id="file-upload"
+                    accept=".py,.js,.ts,.jsx,.tsx,.java,.cpp,.c,.php,.swift,.txt"
+                  />
+                </label>
+                <button onclick="loadSample()">📋 Sample</button>
+                <button onclick="clearCode()">🗑️ Clear</button>
+                <button id="analyze-btn" onclick="analyzeCode()">
+                  <span id="btn-text">🔬 Analyze</span>
+                </button>
+              </div>
+            </div>
+            <div class="editor-area">
+              <div class="line-numbers" id="line-numbers">1</div>
+              <textarea
+                id="code-input"
+                spellcheck="false"
+                placeholder="# Paste your code here or upload a file...
+# Supports Python, JavaScript, Java, C/C++, PHP, Swift
+# Press Ctrl+L to enable live analysis!"
+              ></textarea>
+            </div>
+            <div class="editor-footer">
+              <span id="char-count">0 characters</span>
+              <span id="line-count">0 lines</span>
+              <span id="file-name"></span>
+            </div>
+          </div>
+        </section>
+
+        <section class="results-section hidden" id="results">
+          <div class="results-actions">
+            <h2 class="results-title">📊 Analysis Report</h2>
+            <div class="results-btns">
+              <button onclick="reanalyze()" class="reanalyze-btn">
+                🔁 Re-analyze
+              </button>
+              <button onclick="autoFix()" class="fix-btn">🔧 Auto-Fix</button>
+              <button onclick="exportPDF()" class="export-btn">📄 PDF</button>
+              <button onclick="resetResults()" class="reanalyze-btn-sm">
+                ← New
+              </button>
+            </div>
+          </div>
+
+          <div id="improvement-banner" class="hidden improvement-banner">
+            <span id="improvement-text"></span>
+          </div>
+
+          <div class="score-card">
+            <div class="score-left">
+              <div class="score-circle">
+                <svg viewBox="0 0 120 120">
+                  <circle cx="60" cy="60" r="50" class="score-track" />
+                  <circle
+                    cx="60"
+                    cy="60"
+                    r="50"
+                    class="score-fill"
+                    id="score-arc"
+                  />
+                </svg>
+                <div class="score-text">
+                  <div class="score-num" id="score-num">0</div>
+                  <div class="score-label">/ 100</div>
+                </div>
+              </div>
+              <div class="score-info">
+                <div class="score-title">
+                  Project Health
+                  <span class="grade-badge" id="grade-badge">F</span>
+                </div>
+                <div class="score-summary" id="score-summary"></div>
+                <div class="score-meta" id="score-meta"></div>
+                <div id="perf-section" class="perf-section"></div>
+              </div>
+            </div>
+            <div class="metrics-grid" id="metrics-grid"></div>
+          </div>
+
+          <!-- Radar Chart -->
+          <div class="radar-card">
+            <div class="card-header">
+              <h3>📈 Metrics Radar</h3>
+              <span class="diff-badge">Visual Overview</span>
+            </div>
+            <div class="radar-wrap">
+              <canvas id="radar-chart" width="300" height="300"></canvas>
+            </div>
+          </div>
+
+          <div class="issues-card">
+            <div class="card-header">
+              <h3>⚠️ Issues Found</h3>
+              <span class="issues-count" id="issues-count">0</span>
+            </div>
+            <div id="issues-list"></div>
+          </div>
+
+          <div class="diff-card hidden" id="fix-card">
+            <div class="card-header">
+              <h3>🔧 Auto-Fixed Code</h3>
+              <button class="copy-fix-btn" onclick="copyFixedCode()">
+                📋 Copy
+              </button>
+            </div>
+            <div id="fix-content"></div>
+          </div>
+
+          <div class="diff-card" id="diff-card">
+            <div class="card-header">
+              <h3>🔍 Code Suggestions</h3>
+              <span class="diff-badge">Before vs After</span>
+            </div>
+            <div id="diff-content"></div>
+          </div>
+        </section>
+      </div>
+
+      <!-- Compare Tab -->
+      <div id="tab-compare-content" class="hidden">
+        <section class="compare-section">
+          <div class="compare-header">
+            <h2>📊 Compare Two Files</h2>
+            <p>
+              Analyze two files side by side — see which scores better and why
+            </p>
+          </div>
+          <div class="compare-editors">
+            <div class="compare-editor-wrap">
+              <div class="compare-editor-label">
+                <span>📄 File A</span>
+                <label class="upload-sm"
+                  >Upload
+                  <input
+                    type="file"
+                    id="compare-upload-a"
+                    accept=".py,.js,.ts,.java,.cpp,.c,.php,.swift,.txt"
+                /></label>
+              </div>
+              <textarea
+                id="compare-a"
+                placeholder="Paste your first code here..."
+                spellcheck="false"
+              ></textarea>
+            </div>
+            <div class="compare-editor-wrap">
+              <div class="compare-editor-label">
+                <span>📄 File B</span>
+                <label class="upload-sm"
+                  >Upload
+                  <input
+                    type="file"
+                    id="compare-upload-b"
+                    accept=".py,.js,.ts,.java,.cpp,.c,.php,.swift,.txt"
+                /></label>
+              </div>
+              <textarea
+                id="compare-b"
+                placeholder="Paste your second code here..."
+                spellcheck="false"
+              ></textarea>
+            </div>
+          </div>
+          <div class="compare-actions">
+            <select id="compare-lang">
+              <option value="python">🐍 Python</option>
+              <option value="javascript">📜 JavaScript</option>
+              <option value="java">☕ Java</option>
+              <option value="cpp">⚙️ C / C++</option>
+              <option value="php">🐘 PHP</option>
+              <option value="swift">🍎 Swift</option>
+              <option value="other">📄 Other</option>
+            </select>
+            <button id="compare-btn" onclick="compareFiles()">
+              <span id="compare-btn-text">📊 Compare Files</span>
+            </button>
+          </div>
+          <div id="compare-results" class="hidden">
+            <div class="compare-winner" id="compare-winner"></div>
+            <div class="compare-scores">
+              <div class="compare-score-card" id="score-a"></div>
+              <div class="compare-vs">VS</div>
+              <div class="compare-score-card" id="score-b"></div>
+            </div>
+            <div class="compare-detail" id="compare-detail"></div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <!-- AI Modal -->
+    <div id="ai-modal" class="modal-overlay hidden">
+      <div class="modal-box">
+        <div class="modal-header">
+          <h3>🤖 AI Explanation</h3>
+          <button onclick="closeAIModal()">✕</button>
+        </div>
+        <div id="ai-explanation" class="modal-body">
+          <div class="ai-loading">
+            <div class="spinner"></div>
+            <span>AI is thinking...</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
